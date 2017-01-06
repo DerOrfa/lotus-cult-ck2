@@ -1,0 +1,116 @@
+namespace = lotus
+
+character_event = {	id = lotus.100
+	is_triggered_only = yes
+
+	title = "The power of the lotus"
+	desc = "By making [FromFrom.GetFirstName] voluntarily succumb to my will, I finaly understood the true power of the lotus"
+	picture = GFX_evt_lovers
+
+	option = {
+		name = EVLOTUS_BLESSED_OPA
+		add_trait = lotus_blessed
+	}
+}
+
+character_event = {	id = lotus.200
+	hide_window = yes
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			random = {
+				chance = 90
+				modifier = {
+					factor = 0
+					religion = lotus
+				}
+			}
+			character_event = { id = lotus.210 } # change religion
+		}
+	}
+}
+
+character_event = {	id = lotus.210
+	is_triggered_only = yes
+
+	title = "Convert to lotus"
+	desc = "Being with the [FromFrom.Religion.GetName] [FromFrom.GetFirstName] really shook my beliefs. Can a divine creature like [FromFrom.GetHerHim] be wrong about such important matters?"
+	picture = GFX_evt_lovers
+
+	option = {
+		name = EVLOTUS_CHREL_OPA
+		religion = lotus
+		ai_chance = {
+			factor = 50
+			modifier = { factor = 4.0 FROMFROM = { trait = kind } }
+			modifier = { factor = 0.5 FROMFROM = { trait = cruel } }
+		}
+		hidden_tooltip = {
+			FROMFROM = { character_event = { id = lotus.211 } }
+		}
+	}
+	option = {
+		name = EVLOTUS_CHREL_OPB
+		ai_chance = {
+			factor = 50
+			modifier = { factor = 0.5 FROMFROM = { trait = kind	} }
+			modifier = { factor = 2 FROMFROM = { trait = cruel	} }
+		}
+		character_event = { id = lotus.220 days = 10 random = 90 }
+	}
+}
+
+character_event = {	id = lotus.211
+	is_triggered_only = yes
+
+	title = "[From.GetFirstName] converted"
+	desc = "[From.GetFirstName] publicly anounced that [From.GetSheHe] from now on will be a [From.Religion.GetName]. [From.GetSheHeCap] is probably trying to get my attention."
+	picture = GFX_evt_lovers
+
+	option = {
+		name = EVLOTUS_CHDREL_OPA
+		random = {
+			chance = 10
+			add_trait = kind
+		}
+	}
+}
+
+character_event = {	id = lotus.220
+	is_triggered_only = yes
+
+	picture = GFX_evt_lovers
+	title = "She drives me crazy"
+	desc = "Its futile. The more I try to get [FromFromFrom.GetFirstName] out of my head, the worse it gets."
+	option = {
+		name = EVLOTUS_GOMAD_OPA
+		add_trait = lunatic
+		hidden_tooltip = {
+			FROMFROMFROM = { character_event = { id = lotus.221 } }
+		}
+	}
+}
+
+character_event = {	id = lotus.221
+	is_triggered_only = yes
+
+	title = "[From.GetFirstName] went mad"
+	desc = "Apparently [From.GetFirstName] lost his mind yearning for me"
+	picture = GFX_evt_lovers
+
+	option = {
+		name = EVLOTUS_GONEMAD_OPA
+		random = {
+			chance = 25
+			add_trait = kind
+		}
+	}
+	option = {
+		name = EVLOTUS_GONEMAD_OPB
+		random = {
+			chance = 45
+			add_trait = cruel
+		}
+	}
+}

@@ -1,0 +1,594 @@
+#########################################################
+#
+# Lotus Cult - Way of Life Overrides
+#
+# Written by Enrico Reimer
+#
+#########################################################
+
+namespace = WoL
+
+######################################
+# SEDUCE DECISION CORE EVENTS
+######################################
+
+# Chance of Intrigue boost
+character_event = {
+	id = WoL.80
+
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				trait = amateurish_plotter
+			}
+			random = {
+				chance = 10
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				set_character_flag = int_ed_boost
+				character_event = { id = WoL.81 }
+			}
+			break = yes
+		}
+		if = {
+			limit = {
+				trait = flamboyant_schemer
+			}
+			random = {
+				chance = 5
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				set_character_flag = int_ed_boost
+				character_event = { id = WoL.81 }
+			}
+			break = yes
+		}
+		if = {
+			limit = {
+				trait = intricate_webweaver
+			}
+			random = {
+				chance = 1
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				set_character_flag = int_ed_boost
+				character_event = { id = WoL.81 }
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				NOT = { has_character_modifier = wol_court_vixen }
+				NOT = { has_character_modifier = wol_court_tomcat }
+			}
+			random = {
+				chance = 5
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				set_character_flag = int_fox_boost
+				character_event = { id = WoL.81 }
+			}
+		}
+	}
+}
+
+# Seducer / Seductress level up chance
+character_event = {
+	id = WoL.96
+
+	hide_window = yes
+
+	is_triggered_only = yes
+
+	immediate = {
+
+		# Chance of trait adjustments
+		if = {
+			limit = {
+				NOT = { trait = chaste }
+				NOT = { trait = lustful }
+				random = 85 # 15% chance
+			}
+			add_trait = lustful
+			character_event = { id = 38272 } # Lustful notification
+		}
+
+		if = {
+			limit = {
+				trait = chaste
+				random = 50
+			}
+			remove_trait = chaste
+			character_event = { id = 38303 } # Chaste loss notification
+		}
+
+		# Chance of various Intrigue boosters
+		character_event = { id = WoL.80 days = 7 }
+
+		# Chance of levelling up Seducer skills
+		if = {
+			limit = {
+				has_character_modifier = wol_seducer_2
+			}
+			random = {
+				chance = 10
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				character_event = { id = WoL.99 days = 4 } # Gain the Master Seducer trait
+			}
+			break = yes
+		}
+		if = {
+			limit = {
+				has_character_modifier = wol_seducer_1
+			}
+			random = {
+				chance = 20
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				remove_character_modifier = wol_seducer_1
+				add_character_modifier = {
+					modifier = wol_seducer_2
+					duration = -1
+				}
+			}
+			break = yes
+		}
+
+		if = {
+			limit = {
+				NOR = {
+					trait = seducer
+					trait = seductress
+				}
+			}
+			random = {
+				chance = 50
+				modifier = {
+					factor = 2
+					trait = lotus_blessed
+				}
+				add_character_modifier = {
+					modifier = wol_seducer_1
+					duration = -1
+				}
+			}
+		}
+	}
+}
+
+
+######################################
+# SEDUCE DECISION SEDUCTION ATTEMPTS
+#
+# AI response in these is almost
+# purely opinion driven.
+#
+######################################
+
+######################################################
+# Seduction - Dance
+######################################################
+
+# Seducer: Seduction - bed games - End
+character_event = {
+	id = WoL.306
+
+	desc = {
+		text = EVTDESC_WOL_306_CR
+		trigger = {
+			is_close_relative = FROM
+		}
+	}
+
+	desc = {
+		text = EVTDESC_WOL_306
+		trigger = {
+			NOT = { is_close_relative = FROM }
+		}
+	}
+
+	picture = GFX_evt_lovers
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Chance of levelling up Seduction skill
+		character_event = { id = WoL.96 }
+
+		if = {
+			limit = { AND { religion = lotus NOT { trait = lotus_blessed } } }
+			character_event = { id = lotus.100 }#getting blessed
+		}
+
+		if = {
+			limit = { religion = lotus }
+			FROM = { character_event = { id = lotus.200 days = 3 } } #being seduced by a lotus follower has its consequences
+		}
+
+		# End the Seduction
+		character_event = { id = WoL.118 }
+
+		# Scandal check
+		FROM = { character_event = { id = WoL.50 } }
+
+		# Casanova achievement check event
+		hidden_tooltip = { character_event = { id = 718 } }
+	}
+
+	option = {
+		name = EVTOPTA_WOL_306 # Love and leave
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0.1
+				NOT = { num_of_lovers = 1 }
+			}
+			modifier = {
+				factor = 0.5
+				trait = kind
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 1
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 2
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 3
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 4
+			}
+			modifier = {
+				factor = 10
+				trait = cruel
+			}
+			modifier = {
+				factor = 2
+				trait = arbitrary
+			}
+		}
+		# Chance of impregnation
+
+		if = {
+			limit = { is_female = yes }
+			FROM = { character_event = { id = WoL.97 } }
+		}
+		if = {
+			limit = { is_female = no }
+			FROM = { character_event = { id = WoL.98 } }
+		}
+
+		custom_tooltip = { text = EVTOPTA_WOL_306_CUSTOM }
+	}
+
+	option = {# Our love must grow
+		name = EVTOPTB_WOL_306
+		ai_chance = {
+			factor = 100
+		}
+		# Chance of impregnation
+
+		if = {
+			limit = { is_female = yes }
+			FROM = { character_event = { id = WoL.97 } }
+		}
+		if = {
+			limit = { is_female = no }
+			FROM = { character_event = { id = WoL.98 } }
+		}
+		add_lover = FROM
+	}
+	option = { # no impregnation
+		trigger = {	religion = lotus }
+		name= {
+		  text = pull_out_desc_f
+		  trigger = { is_female = yes }
+		}
+		name= {
+		  text = pull_out_desc_m
+		  trigger = { is_female = no }
+		}
+		custom_tooltip = { text = EVTOPTA_WOL_306_CUSTOM }
+	}
+}
+
+######################################################
+# Seduction - Court picnic in the wild
+######################################################
+
+# Seducer: Success End
+character_event = {
+	id = WoL.405
+	title = EVTTITLE_WOL_401
+
+	desc = {
+		text = EVTDESC_WOL_405_SIN
+		trigger = {
+			OR = {
+				is_close_relative = FROM
+				same_sex = FROM
+			}
+		}
+	}
+
+	desc = {
+		text = EVTDESC_WOL_405
+		trigger = {
+			NOT = { is_close_relative = FROM }
+			NOT = { same_sex = FROM }
+		}
+	}
+
+	picture = GFX_evt_lovers
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		# Chance of levelling up Seduction skill
+		character_event = { id = WoL.96 }
+
+		if = {
+			limit = { AND { religion = lotus NOT { trait = lotus_blessed } } }
+			character_event = { id = lotus.100 } #getting blessed
+		}
+
+		if = {
+			limit = { religion = lotus }
+			FROM = { character_event = { id = lotus.200 days = 3 } } #being seduced by a lotus follower has its consequences
+		}
+
+		# End the Seduction
+		character_event = { id = WoL.118 }
+
+		# Scandal check
+		FROM = { character_event = { id = WoL.50 } }
+
+		# Casanova achievement check event
+		hidden_tooltip = { character_event = { id = 718 } }
+
+		# Chance of impregnation
+		if = {
+			limit = { is_female = yes }
+			FROM = { character_event = { id = WoL.97 } }
+			break = yes
+		}
+		FROM = { character_event = { id = WoL.98 } }
+	}
+
+	option = {
+		name = EVTOPTA_WOL_306 # Love and leave
+		ai_chance = {
+			factor = 10
+			modifier = {
+				factor = 0.1
+				NOT = { num_of_lovers = 1 }
+			}
+			modifier = {
+				factor = 0.5
+				trait = kind
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 1
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 2
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 3
+			}
+			modifier = {
+				factor = 10
+				num_of_lovers = 4
+			}
+			modifier = {
+				factor = 10
+				trait = cruel
+			}
+			modifier = {
+				factor = 2
+				trait = arbitrary
+			}
+		}
+		custom_tooltip = { text = EVTOPTA_WOL_306_CUSTOM }
+	}
+
+	option = {
+		name = EVTOPTB_WOL_306 # Our love must grow
+		ai_chance = {
+			factor = 100
+		}
+		add_lover = FROM
+	}
+
+	option = { # no impregnation
+		trigger = {	religion = lotus }
+		name= {
+			text = pull_out_desc_f
+			trigger = { is_female = yes }
+		}
+		name= {
+			text = pull_out_desc_m
+			trigger = { is_female = no }
+		}
+		custom_tooltip = { text = EVTOPTA_WOL_306_CUSTOM }
+	}
+
+}
+
+# Seducer: Courtier found the note and came instead!
+character_event = {
+	id = WoL.428
+	title = EVTTITLE_WOL_401
+	desc = EVTDESC_WOL_428
+
+	picture = GFX_evt_lovers
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	option = {
+		name = EVTOPTA_WOL_428 # Tumble the courtier and move on
+
+		hidden_tooltip = {
+			FROMFROM = { character_event = { id = WoL.429 days = 1 } }
+
+			# Chance of levelling up Seduction skill
+			character_event = { id = WoL.96 }
+
+			if = {
+				limit = { AND { religion = lotus NOT { trait = lotus_blessed } } }
+				character_event = { id = lotus.100 }#getting blessed
+			}
+
+			if = {
+				limit = { religion = lotus }
+				FROM = { character_event = { id = lotus.200 days = 3 } } #being seduced by a lotus follower has its consequences
+			}
+
+			# Chance of impregnation
+			if = {
+				limit = { is_female = yes }
+				FROMFROM = { character_event = { id = WoL.97 } }
+			}
+
+			if = {
+				limit = { is_female = no }
+				FROMFROM = { character_event = { id = WoL.98 } }
+			}
+		}
+
+		if = {
+			limit = {
+				is_female = no
+				FROM = {
+					is_female = yes
+					OR = {
+						higher_tier_than = duke
+						any_spouse = { higher_tier_than = duke }
+						any_consort = { higher_tier_than = duke }
+					}
+				}
+			}
+			hidden_tooltip = {
+				character_event = { id = WoL.110 days = 60 random = 30 } # Back to the tombola
+			}
+			break = yes
+		}
+
+		character_event = { id = WoL.110 days = 20 random = 20 tooltip = EVTTOOLTIP_WoL_110 } # Back to the tombola
+	}
+
+	option = {
+		name = EVTOPTB_WOL_428 # Ehm, sorry, but no!
+
+		FROMFROM = { character_event = { id = WoL.430 days = 1 tooltip = EVTTOOLTIP_WoL_430 } }
+
+
+		if = {
+			limit = {
+				is_female = no
+				FROM = {
+					is_female = yes
+					OR = {
+						higher_tier_than = duke
+						any_spouse = { higher_tier_than = duke }
+						any_consort = { higher_tier_than = duke }
+					}
+				}
+			}
+			hidden_tooltip = {
+				character_event = { id = WoL.110 days = 60 random = 30 } # Back to the tombola
+			}
+			break = yes
+		}
+
+		character_event = { id = WoL.110 days = 20 random = 20 tooltip = EVTTOOLTIP_WoL_110 } # Back to the tombola
+	}
+}
+
+######################################################
+# RANDOM SEDUCTION EVENTS
+######################################################
+
+# Success (jailbreak)!
+character_event = {
+	id = WoL.585
+	desc = EVTDESC_WOL_585
+	picture = GFX_evt_jailbreak
+	border = GFX_event_normal_frame_intrigue
+
+	is_triggered_only = yes
+
+	immediate = {
+		if = {
+			limit = {
+				is_female = yes
+				NOT = { age = 45 }
+				fertility = 0.33
+			}
+			random = {
+				chance = 33
+				if = {
+					limit = {
+						is_married = no
+						is_consort = no
+					}
+					impregnate = yes
+					break = yes
+				}
+				impregnate_cuckoo = yes
+			}
+		}
+
+		character_event = { id = WoL.96 } # Chance to level up skills
+
+		if = {
+			limit = { AND { religion = lotus NOT { trait = lotus_blessed } } }
+			character_event = { id = lotus.100 } #getting blessed
+		}
+
+		if = {
+			limit = { religion = lotus }
+			FROM = { character_event = { id = lotus.200 days = 3 } } #being seduced by a lotus follower has its consequences
+		}
+
+		log = "WoL.585: [Root.GetTitledName] escapes the dungeon of [Root.Host.GetTitledName]."
+	}
+
+	option = {
+		name = EVTOPTA_WOL_585
+		hidden_tooltip = {
+			host = { character_event = { id = WoL.586 days = 1 } }
+		}
+
+		prisoner = no
+	}
+}
